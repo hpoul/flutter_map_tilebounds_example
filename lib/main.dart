@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart' as fm;
+import 'package:latlong2/latlong.dart' as ll;
 
 void main() {
   runApp(const MyApp());
@@ -24,92 +26,59 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MapContent(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+class MapContent extends StatelessWidget {
+  const MapContent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+    return fm.FlutterMap(
+      options: fm.MapOptions(
+        center: ll.LatLng(39.81074507870429, 3.1154755243871137),
+        zoom: 10.0,
+        maxZoom: 15,
+        enableMultiFingerGestureRace: true,
+        rotationWinGestures:
+            fm.MultiFingerGesture.rotate | fm.MultiFingerGesture.pinchZoom,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      children: [
+        fm.TileLayerWidget(
+          options: fm.TileLayerOptions(
+            tileBounds: fm.LatLngBounds(
+              ll.LatLng(39.153804, 2.140099),
+              // ll.LatLng(39.153804, 2.6),
+              ll.LatLng(40.079265, 3.685447),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            subdomains: ['a', 'b', 'c'],
+            // tileProvider: const CachedTileProvider(),
+            attributionBuilder: (_) {
+              return const Text('© OpenStreetMap contributors');
+            },
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        // fm.TileLayerWidget(
+        //   options: fm.TileLayerOptions(
+        //     tileBounds: fm.LatLngBounds(
+        //       ll.LatLng(39.153804, 2.140099),
+        //       // ll.LatLng(39.153804, 2.6),
+        //       ll.LatLng(40.079265, 3.685447),
+        //     ),
+        //     opacity: 0.5,
+        //     // wmsOptions: fm.WMSTileLayerOptions(baseUrl: baseUrl),
+        //     backgroundColor: Colors.transparent,
+        //     urlTemplate:
+        //         'https://cdn.huerzeler.app/data/tilesoutmercator/{z}/{x}/{y}.png',
+        //     // subdomains: ['a', 'b', 'c'],
+        //     maxZoom: 15,
+        //     tms: true,
+        //   ),
+        // ),
+      ],
     );
   }
 }
